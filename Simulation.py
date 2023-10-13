@@ -22,41 +22,37 @@ wallT = box(pos=vector(0,  side, 0), size=vector(s3, thk, s3),  color=color.blue
 wallBK = box(pos=vector(0, 0, -side), size=vector(s2, s2, thk), color=color.gray(0.7))
 
 charges = []
-number_of_charges = 1000
-charges_radius = 0.05
+number_of_charges = 50
+charges_radius = 0.2
 for i in range(number_of_charges):
-    r_value_1 = uniform(-1, 1)*side
-    r_value_2 = uniform(-1, 1)*side
-    r_value_3 = uniform(-1, 1)*side
-    charges.append(sphere(color=color.green, radius=charges_radius, make_trail=False, momentum=vector(0, 0, 0), pos=vector(r_value_1, r_value_2, r_value_3), mass=1.0))
+    r_value_1 = uniform(-1, 1)*2
+    r_value_2 = uniform(-1, 1)*2
+    r_value_3 = uniform(-1, 1)*2
+    charges.append(sphere(color=color.green, radius=charges_radius, make_trail=False, momentum=vector(0, 0, 0), pos=vector(r_value_1, r_value_2, r_value_3), mass=1))
 
 side = side - thk*0.5 - charges_radius
 dt = 0.3
 t = 0
+inv_damping_coefficient = 1
 while (True): #general loop
     rate(100)
 
     for charge in charges:
         charge.force = vector(0, 0, 0)
-    for charge in charges:
         for product in range(number_of_charges):
             if charge != charges[product]:
                 charge.force += kforce(charge, charges[product])
 
-    for charge in charges:
         charge.momentum = charge.momentum + charge.force * dt
 
-    for charge in charges:
         charge.pos = charge.pos + charge.momentum / charge.mass * dt
 
-    for charge in charges:
         if not (side > charge.pos.x > -side):
-            charge.momentum.x = -charge.momentum.x
+            charge.momentum.x = -charge.momentum.x * inv_damping_coefficient
         if not (side > charge.pos.y > -side):
-            charge.momentum.y = -charge.momentum.y
+            charge.momentum.y = -charge.momentum.y * inv_damping_coefficient
         if not (side > charge.pos.z > -side):
-            charge.momentum.z = -charge.momentum.z
-
+            charge.momentum.z = -charge.momentum.z * inv_damping_coefficient
 
     t = t + dt
 
