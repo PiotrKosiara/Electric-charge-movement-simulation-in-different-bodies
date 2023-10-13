@@ -1,4 +1,5 @@
 from vpython import *
+from random import uniform
 
 def kforce(p1,p2):
     k = 0.01
@@ -20,42 +21,42 @@ wallB = box(pos=vector(0, -side, 0), size=vector(s3, thk, s3),  color=color.blue
 wallT = box(pos=vector(0,  side, 0), size=vector(s3, thk, s3),  color=color.blue)
 wallBK = box(pos=vector(0, 0, -side), size=vector(s2, s2, thk), color=color.gray(0.7))
 
-ball = sphere(color=color.green, radius=0.4, make_trail=True, retain=200, momentum=vector(0, 0, 0), pos=vector(0.1, 0.3, -0.2))
-ball.mass = 1.0
+charges = []
+number_of_charges = 1000
+charges_radius = 0.05
+for i in range(number_of_charges):
+    r_value_1 = uniform(-1, 1)*side
+    r_value_2 = uniform(-1, 1)*side
+    r_value_3 = uniform(-1, 1)*side
+    charges.append(sphere(color=color.green, radius=charges_radius, make_trail=False, momentum=vector(0, 0, 0), pos=vector(r_value_1, r_value_2, r_value_3), mass=1.0))
 
-ball_2 = sphere(color=color.green, radius=0.4, make_trail=True, retain=200, momentum=vector(0, 0, 0),pos=vector(-0.3, -0.1, 0.8))
-ball_2.mass = 1.0
-
-side = side - thk*0.5 - ball.radius
-
+side = side - thk*0.5 - charges_radius
 dt = 0.3
 t = 0
 while (True): #general loop
     rate(100)
 
-    ball.force = kforce(ball, ball_2)
-    ball_2.force = kforce(ball_2, ball)
+    for charge in charges:
+        charge.force = vector(0, 0, 0)
+    for charge in charges:
+        for product in range(number_of_charges):
+            if charge != charges[product]:
+                charge.force += kforce(charge, charges[product])
 
-    ball.momentum = ball.momentum + ball.force * dt
-    ball_2.momentum = ball_2.momentum + ball_2.force * dt
+    for charge in charges:
+        charge.momentum = charge.momentum + charge.force * dt
 
-    ball.pos = ball.pos + (ball.momentum / ball.mass) * dt
-    ball_2.pos = ball_2.pos + (ball_2.momentum / ball_2.mass) * dt
+    for charge in charges:
+        charge.pos = charge.pos + charge.momentum / charge.mass * dt
 
-    if not (side > ball.pos.x > -side):
-        ball.momentum.x = -ball.momentum.x
-    if not (side > ball.pos.y > -side):
-        ball.momentum.y = -ball.momentum.y
-    if not (side > ball.pos.z > -side):
-        ball.momentum.z = -ball.momentum.z
+    for charge in charges:
+        if not (side > charge.pos.x > -side):
+            charge.momentum.x = -charge.momentum.x
+        if not (side > charge.pos.y > -side):
+            charge.momentum.y = -charge.momentum.y
+        if not (side > charge.pos.z > -side):
+            charge.momentum.z = -charge.momentum.z
 
-
-    if not (side > ball_2.pos.x > -side):
-        ball_2.momentum.x = -ball_2.momentum.x
-    if not (side > ball_2.pos.y > -side):
-        ball_2.momentum.y = -ball_2.momentum.y
-    if not (side > ball_2.pos.z > -side):
-        ball_2.momentum.z = -ball_2.momentum.z
 
     t = t + dt
 
