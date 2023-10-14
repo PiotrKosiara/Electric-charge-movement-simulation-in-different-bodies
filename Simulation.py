@@ -22,18 +22,34 @@ wallT = box(pos=vector(0,  side, 0), size=vector(s3, thk, s3),  color=color.blue
 wallBK = box(pos=vector(0, 0, -side), size=vector(s2, s2, thk), color=color.gray(0.7))
 
 charges = []
-number_of_charges = 50
+number_of_charges = 8
 charges_radius = 0.2
 for i in range(number_of_charges):
     r_value_1 = uniform(-1, 1)*2
     r_value_2 = uniform(-1, 1)*2
     r_value_3 = uniform(-1, 1)*2
-    charges.append(sphere(color=color.green, radius=charges_radius, make_trail=False, momentum=vector(0, 0, 0), pos=vector(r_value_1, r_value_2, r_value_3), mass=1))
+    charges.append(sphere(color=color.green, radius=charges_radius, make_trail=False, retain=200, momentum=vector(0, 0, 0), pos=vector(r_value_1, r_value_2, r_value_3), mass=1))
 
-side = side - thk*0.5 - charges_radius
+side = side - thk*0.5 - charges_radius - 0.1
 dt = 0.3
 t = 0
-inv_damping_coefficient = 1
+inv_damping_coefficient = 0.7
+def update_time(dtt):
+    global dt
+    dt = dtt.value
+def update_coe(coe):
+    global inv_damping_coefficient
+    inv_damping_coefficient = coe.value
+def update_size(size):
+    global charges_radius, side, charges
+    charges_radius = size.value
+    side = 4.0 - thk*0.5 - charges_radius - 0.1
+    for charge in charges:
+        charge.radius = charges_radius
+
+slider(min=0, max=1, value=0, step=0.01, bind=update_time, name="Time")
+slider(min=0, max=1, value=0, step=0.01, bind=update_coe, name="Damping coefficient")
+slider(min=0, max=1, value=0, step=0.01, bind=update_size, name="Charges size")
 while (True): #general loop
     rate(100)
 
