@@ -10,42 +10,48 @@ def kforce(p1,p2):
     force_vec = force_mag*r_hat
     return force_vec
 
+def update_time(dtt):
+    global dt
+    dt = dtt.value
+
+def update_coe(coe):
+    global inv_damping_coefficient
+    inv_damping_coefficient = coe.value
+
+def update_size(size):
+    global charges_radius, side, charges
+    charges_radius = size.value
+    side = start_side - thk*0.5 - charges_radius
+    for charge in charges:
+        charge.radius = charges_radius
+
+
 side = 4.0
+start_side = side
 thk = 0.3
 s2 = 2*side - thk
 s3 = 2*side + thk
 
-wallR = box(pos=vector(side, 0, 0), size=vector(thk, s2, s3),  color=color.red)
-wallL = box(pos=vector(-side, 0, 0), size=vector(thk, s2, s3),  color=color.red)
-wallB = box(pos=vector(0, -side, 0), size=vector(s3, thk, s3),  color=color.blue)
-wallT = box(pos=vector(0,  side, 0), size=vector(s3, thk, s3),  color=color.blue)
-wallBK = box(pos=vector(0, 0, -side), size=vector(s2, s2, thk), color=color.gray(0.7))
+wallR = box(pos=vector(side, 0, 0), size=vector(thk, s2, s3),  color=color.gray(0.7), opacity=0.1)
+wallL = box(pos=vector(-side, 0, 0), size=vector(thk, s2, s3),  color=color.gray(0.7), opacity=0.1)
+wallB = box(pos=vector(0, -side, 0), size=vector(s3, thk, s3),  color=color.gray(0.7), opacity=0.1)
+wallT = box(pos=vector(0,  side, 0), size=vector(s3, thk, s3),  color=color.gray(0.7), opacity=0.1)
+wallBK = box(pos=vector(0, 0, -side), size=vector(s2, s2, thk), color=color.gray(0.7), opacity=0.1)
 
 charges = []
-number_of_charges = 8
-charges_radius = 0.2
+number_of_charges = 100
+charges_radius = 0.4
 for i in range(number_of_charges):
     r_value_1 = uniform(-1, 1)*2
     r_value_2 = uniform(-1, 1)*2
     r_value_3 = uniform(-1, 1)*2
     charges.append(sphere(color=color.green, radius=charges_radius, make_trail=False, retain=200, momentum=vector(0, 0, 0), pos=vector(r_value_1, r_value_2, r_value_3), mass=1))
 
-side = side - thk*0.5 - charges_radius - 0.1
-dt = 0.3
+side = side - thk*0.5 - charges_radius
+dt = 0.01
 t = 0
-inv_damping_coefficient = 0.7
-def update_time(dtt):
-    global dt
-    dt = dtt.value
-def update_coe(coe):
-    global inv_damping_coefficient
-    inv_damping_coefficient = coe.value
-def update_size(size):
-    global charges_radius, side, charges
-    charges_radius = size.value
-    side = 4.0 - thk*0.5 - charges_radius - 0.1
-    for charge in charges:
-        charge.radius = charges_radius
+inv_damping_coefficient = 1
+
 
 slider(min=0, max=1, value=0, step=0.01, bind=update_time, name="Time")
 slider(min=0, max=1, value=0, step=0.01, bind=update_coe, name="Damping coefficient")
@@ -65,10 +71,24 @@ while (True): #general loop
 
         if not (side > charge.pos.x > -side):
             charge.momentum.x = -charge.momentum.x * inv_damping_coefficient
+            if charge.pos.x > side:
+                charge.pos.x = charge.pos.x - 0.1
+            if charge.pos.x < -side:
+                charge.pos.x = charge.pos.x + 0.1
         if not (side > charge.pos.y > -side):
             charge.momentum.y = -charge.momentum.y * inv_damping_coefficient
+            if charge.pos.y > side:
+                charge.pos.y = charge.pos.y - 0.1
+            if charge.pos.y < -side:
+                charge.pos.y = charge.pos.y + 0.1
         if not (side > charge.pos.z > -side):
             charge.momentum.z = -charge.momentum.z * inv_damping_coefficient
+            if charge.pos.z > side:
+                charge.pos.z = charge.pos.z - 0.1
+            if charge.pos.z < -side:
+                charge.pos.z = charge.pos.z + 0.1
+
+
 
     t = t + dt
 
