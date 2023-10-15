@@ -25,18 +25,17 @@ def update_size(size):
     for charge in charges:
         charge.radius = charges_radius
 
-
 side = 4.0
 start_side = side
 thk = 0.3
 s2 = 2*side - thk
 s3 = 2*side + thk
 
-wallR = box(pos=vector(side, 0, 0), size=vector(thk, s2, s3),  color=color.gray(0.7), opacity=0.1)
-wallL = box(pos=vector(-side, 0, 0), size=vector(thk, s2, s3),  color=color.gray(0.7), opacity=0.1)
-wallB = box(pos=vector(0, -side, 0), size=vector(s3, thk, s3),  color=color.gray(0.7), opacity=0.1)
-wallT = box(pos=vector(0,  side, 0), size=vector(s3, thk, s3),  color=color.gray(0.7), opacity=0.1)
-wallBK = box(pos=vector(0, 0, -side), size=vector(s2, s2, thk), color=color.gray(0.7), opacity=0.1)
+wallR = box(pos=vector(side, 0, 0), size=vector(thk+0.01, s2+0.01, s3+0.01),  color=color.gray(1), opacity=0.1)
+wallL = box(pos=vector(-side, 0, 0), size=vector(thk+0.01, s2+0.01, s3+0.01),  color=color.gray(1), opacity=0.1)
+wallB = box(pos=vector(0, -side, 0), size=vector(s3+0.01, thk+0.01, s3+0.01),  color=color.gray(1), opacity=0.1)
+wallT = box(pos=vector(0,  side, 0), size=vector(s3+0.01, thk+0.01, s3+0.01),  color=color.gray(1), opacity=0.1)
+wallBK = box(pos=vector(0, 0, -side), size=vector(s2+0.01, s2+0.01, thk+0.01), color=color.gray(1), opacity=0.1)
 
 charges = []
 number_of_charges = 100
@@ -51,7 +50,6 @@ side = side - thk*0.5 - charges_radius
 dt = 0.01
 t = 0
 inv_damping_coefficient = 1
-
 
 slider(min=0, max=1, value=0, step=0.01, bind=update_time, name="Time")
 slider(min=0, max=1, value=0, step=0.01, bind=update_coe, name="Damping coefficient")
@@ -87,8 +85,6 @@ while (True): #general loop
                 charge.pos.z = charge.pos.z - 0.1
             if charge.pos.z < -side:
                 charge.pos.z = charge.pos.z + 0.1
-
-
 
     t = t + dt
 
